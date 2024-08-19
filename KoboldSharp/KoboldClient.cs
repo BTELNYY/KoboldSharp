@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace KoboldSharp
 {
@@ -30,9 +32,27 @@ namespace KoboldSharp
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             content = content.Trim();
-            return JsonSerializer.Deserialize<ModelOutput>(content);
-            
+            var output = JsonSerializer.Deserialize<ModelOutput>(content);
+
+            // If TrimStop is true, trim the output at the first occurrence of any stop sequence
+            if (parameters.TrimStop && parameters.StopSequence != null && parameters.StopSequence.Count > 0)
+            {
+                foreach (var result in output.Results)
+                {
+                    foreach (var stopSeq in parameters.StopSequence)
+                    {
+                        int index = result.Text.IndexOf(stopSeq);
+                        if (index >= 0)
+                        {
+                            result.Text = result.Text.Substring(0, index);
+                        }
+                    }
+                }
+            }
+
+            return output;
         }
+
 
         public async Task<ModelOutput> Check()
         {
@@ -53,3 +73,4 @@ namespace KoboldSharp
         }
     }
 }
+
