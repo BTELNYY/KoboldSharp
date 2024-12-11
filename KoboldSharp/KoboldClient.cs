@@ -68,8 +68,20 @@ namespace KoboldSharp
         public async void Abort()
         {
             var payload = new StringContent(string.Empty);
-            var response = await _client.PostAsync($"{_baseUri}/api/v1/abort", payload);
+            var response = await _client.PostAsync($"{_baseUri}/api/extra/abort", payload);
             await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<PerformanceData> GetPerformanceAsync()
+        {
+            var response = await _client.GetAsync($"{_baseUri}/api/extra/perf");
+            string data = await response.Content.ReadAsStringAsync();
+            PerformanceData? perfData = JsonSerializer.Deserialize<PerformanceData>(data);
+            if(perfData == null)
+            {
+                return new PerformanceData();
+            }
+            return perfData;
         }
     }
 }
