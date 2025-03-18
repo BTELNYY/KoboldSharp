@@ -1,7 +1,5 @@
-﻿using System.Net.Http;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace KoboldSharp
 {
@@ -27,19 +25,19 @@ namespace KoboldSharp
 
         public async Task<ModelOutput> Generate(GenParams parameters)
         {
-            var payload = new StringContent(parameters.GetJson(), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{_baseUri}/api/v1/generate", payload);
+            StringContent payload = new StringContent(parameters.GetJson(), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PostAsync($"{_baseUri}/api/v1/generate", payload);
             response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+            string content = await response.Content.ReadAsStringAsync();
             content = content.Trim();
-            var output = JsonSerializer.Deserialize<ModelOutput>(content);
+            ModelOutput? output = JsonSerializer.Deserialize<ModelOutput>(content);
 
             // If TrimStop is true, trim the output at the first occurrence of any stop sequence
             if (parameters.TrimStop && parameters.StopSequence != null && parameters.StopSequence.Count > 0)
             {
-                foreach (var result in output.Results)
+                foreach (Result result in output.Results)
                 {
-                    foreach (var stopSeq in parameters.StopSequence)
+                    foreach (string stopSeq in parameters.StopSequence)
                     {
                         int index = result.Text.IndexOf(stopSeq);
                         if (index >= 0)
@@ -56,10 +54,10 @@ namespace KoboldSharp
 
         public async Task<ModelOutput> Check()
         {
-            var payload = new StringContent(string.Empty);
-            var response = await _client.PostAsync($"{_baseUri}/api/extra/generate/check", payload);
+            StringContent payload = new StringContent(string.Empty);
+            HttpResponseMessage response = await _client.PostAsync($"{_baseUri}/api/extra/generate/check", payload);
             response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+            string content = await response.Content.ReadAsStringAsync();
             content = content.Trim();
             return JsonSerializer.Deserialize<ModelOutput>(content);
 
@@ -67,17 +65,17 @@ namespace KoboldSharp
 
         public async void Abort()
         {
-            var payload = new StringContent(string.Empty);
-            var response = await _client.PostAsync($"{_baseUri}/api/extra/abort", payload);
+            StringContent payload = new StringContent(string.Empty);
+            HttpResponseMessage response = await _client.PostAsync($"{_baseUri}/api/extra/abort", payload);
             await response.Content.ReadAsStringAsync();
         }
 
         public async Task<PerformanceData> GetPerformanceAsync()
         {
-            var response = await _client.GetAsync($"{_baseUri}/api/extra/perf");
+            HttpResponseMessage response = await _client.GetAsync($"{_baseUri}/api/extra/perf");
             string data = await response.Content.ReadAsStringAsync();
             PerformanceData? perfData = JsonSerializer.Deserialize<PerformanceData>(data);
-            if(perfData == null)
+            if (perfData == null)
             {
                 return new PerformanceData();
             }

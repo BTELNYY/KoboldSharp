@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KoboldSharp
 {
@@ -13,7 +8,7 @@ namespace KoboldSharp
         /// Last Processing time in seconds
         /// </summary>
         [JsonPropertyName("last_process")]
-        public float LastProcessSeconds {  get; set; }
+        public float LastProcessSeconds { get; set; }
 
         [JsonIgnore]
         public TimeSpan LastProcessTime
