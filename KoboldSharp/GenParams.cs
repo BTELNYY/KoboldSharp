@@ -42,7 +42,7 @@ namespace KoboldSharp
         [JsonPropertyName("memory")]
         public string Memory { get; set; }
 
-        public GenParams(string prompt = "", int n = 1, int maxContextLength = 2048, int maxLength = 80, float repPen = 1.1f, float temperature = 0.59f, float topP = 1f, float topK = 0f, float topA = 0f, float typical = 1f, float tfs = 0.87f, int repPenRange = 2048, float repPenSlope = 0.3f, List<int> samplerOrder = null, bool quiet = true, List<string> stopSequence = null, bool trimStop = true, string memory = "")
+        public GenParams(string prompt = "", int n = 1, int maxContextLength = 2048, int maxLength = 80, float repPen = 1.1f, float temperature = 0.59f, float topP = 1f, float topK = 0f, float topA = 0f, float typical = 1f, float tfs = 0.87f, int repPenRange = 2048, float repPenSlope = 0.3f, List<int>? samplerOrder = null, bool quiet = true, List<string>? stopSequence = null, bool trimStop = true, string memory = "")
         {
             Prompt = prompt;
             N = n;
